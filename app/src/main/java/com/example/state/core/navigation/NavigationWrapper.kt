@@ -27,15 +27,18 @@ fun NavigationWrapper() {
             }
         }
 
-        composable("Notes") {
+        composable("Notes/{userId}") { backStackEntry ->
+            // Get userId from navigation arguments
+            val userId = backStackEntry.arguments?.getString("userId")?.toIntOrNull() ?: -1
+
             // Instanciamos TextToSpeach con el context de Compose
             val context = androidx.compose.ui.platform.LocalContext.current
             val tts = androidx.compose.runtime.remember {
                 com.example.state.core.hardware.TextToSpeach(context)
             }
-            // Creamos el NoteViewModel pasándole el tts como parámetro
+            // Creamos el NoteViewModel pasándole el tts y userId como parámetros
             val noteViewModel = androidx.compose.runtime.remember {
-                NoteViewModel(tts)
+                NoteViewModel(tts, userId)
             }
             // Ahora sí, llamamos a NoteScreen con este ViewModel
             NoteScreen(noteViewModel) { destination ->

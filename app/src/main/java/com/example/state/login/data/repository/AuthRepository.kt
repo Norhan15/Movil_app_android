@@ -6,7 +6,7 @@ import com.example.state.login.data.datasource.AuthService
 class AuthRepository {
     private val authService = RetrofitHelper.createService(AuthService::class.java)
 
-    suspend fun login(username: String, password: String): Result<String> {
+    suspend fun login(username: String, password: String): Result<Pair<String, Int>> {
         return try {
             val response = authService.login(
                 mapOf(
@@ -17,7 +17,9 @@ class AuthRepository {
             if (response.isSuccessful) {
                 val loginBody = response.body()
                 if (loginBody != null && loginBody.success) {
-                    Result.success(loginBody.message)
+                    // Return both token and userId
+                    val userId = loginBody.userId ?: -1
+                    Result.success(Pair(loginBody.message, userId))
                 } else {
                     Result.failure(Exception(loginBody?.message ?: "Error desconocido"))
                 }

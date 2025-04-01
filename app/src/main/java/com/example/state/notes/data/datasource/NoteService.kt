@@ -7,13 +7,17 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface NoteService {
 
-    @GET("api/notes")
-    suspend fun getNotes(): Response<List<NoteDTO>>
+    @GET("api/notes/{user_id}")
+    suspend fun getNotesByUserId(@Path("user_id") userId: Int): Response<List<NoteDTO>>
 
-    @POST("api/notes/")
-    suspend fun createNote(@Body request: CreateNoteRequest): Response<CreateNoteResponse>
+    @POST("api/notes/{user_id}")
+    suspend fun createNote(
+        @Path("user_id") userId: Int,
+        @Body request: CreateNoteRequest
+    ): Response<CreateNoteResponse>
 
 }

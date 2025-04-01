@@ -25,6 +25,9 @@ class LoginViewModel : ViewModel() {
     private val _navigationCommand = MutableLiveData<String?>()
     val navigationCommand: LiveData<String?> = _navigationCommand
 
+    private val _userId = MutableLiveData<Int>()
+    val userId: LiveData<Int> = _userId
+
     fun onUsernameChange(newUsername: String) {
         _username.value = newUsername
     }
@@ -45,9 +48,10 @@ class LoginViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             val result = loginUseCase(usernameValue, passwordValue)
-            result.onSuccess { token ->
+            result.onSuccess { (token, userId) ->
                 _errorMessage.value = null
-                _navigationCommand.value = "Notes"
+                _userId.value = userId
+                _navigationCommand.value = "Notes/$userId"  // Pass userId in navigation route
             }.onFailure { exception ->
                 _errorMessage.value = exception.message ?: "Error desconocido"
             }
@@ -62,5 +66,4 @@ class LoginViewModel : ViewModel() {
     fun navigateToRegister() {
         _navigationCommand.value = "Register"
     }
-
 }

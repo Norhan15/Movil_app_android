@@ -5,12 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.state.core.hardware.TextToSpeach
-import com.example.state.notes.data.model.CreateNoteRequest
 import com.example.state.notes.data.model.NoteDTO
 import com.example.state.notes.data.repository.NoteRepository
 import kotlinx.coroutines.launch
 
-class NoteViewModel(private val tts: TextToSpeach) : ViewModel() {
+class NoteViewModel(private val tts: TextToSpeach, private val userId: Int) : ViewModel() {
 
     private val repository = NoteRepository()
 
@@ -42,7 +41,7 @@ class NoteViewModel(private val tts: TextToSpeach) : ViewModel() {
     fun getAllNotes() {
         viewModelScope.launch {
             _isLoading.value = true
-            val result = repository.getNotes()
+            val result = repository.getNotesByUserId(userId)
             result.onSuccess { noteList ->
                 _notes.value = noteList
                 _error.value = null
@@ -65,8 +64,7 @@ class NoteViewModel(private val tts: TextToSpeach) : ViewModel() {
 
         viewModelScope.launch {
             _isLoading.value = true
-            val request = CreateNoteRequest(titleValue, contentValue)
-            val result = repository.createNote(request)
+            val result = repository.createNote(titleValue, contentValue, userId)
             result.onSuccess { createResponse ->
                 if (createResponse.success) {
                     getAllNotes()
